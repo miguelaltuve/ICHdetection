@@ -285,7 +285,7 @@ er.LineStyle = 'none';
 grid on;
 xlabel('Metrics');
 ylabel('Percentage');
-ylim([50 100])
+ylim([50 102])
 hold off
 
 cd ../results/
