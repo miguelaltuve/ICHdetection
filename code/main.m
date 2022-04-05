@@ -173,6 +173,15 @@ for j = 1:iterationsMCCV
 
 end % End of MCCV
 
+disp('Last confusion matrix on a validation subset')
+disp(ConfMat{j})
+
+disp('Sum of the confusion matrices on the validation subset over all iterations of the MCCV')
+disp(FinalConfMatr)
+
+disp('Confusion matrix averaged over all iterations of the MCCV')
+disp(FinalConfMatr/iterationsMCCV)
+
 
 %% Plotting and saving NumberImageToPlot random images with prediction labels
 disp('Plotting four random images with prediction labels')
