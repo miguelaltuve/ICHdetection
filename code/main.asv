@@ -19,7 +19,7 @@ disp('Declaration and initialization of variables')
 imds = imageDatastore(pwd,'IncludeSubfolders',true,'LabelSource','foldernames');
 
 % Initialization of the performance metrics
-iterationsMCCV = 10; % Number of iterations of the MCCV
+iterationsMCCV = 1; % Number of iterations of the MCCV
 ConfMat = cell(iterationsMCCV,1); % confusion matrix of each iteration
 FinalConfMatr = zeros(2); % Final confusion matrix
 Accuracy = ones(iterationsMCCV,1); % Accuracy
@@ -174,60 +174,48 @@ for j = 1:iterationsMCCV
 end % End of MCCV
 
 
-%% Plotting and saving NumberImageToPlot random images with prediction labels
+%% Plotting and saving four random images with prediction labels
 disp('Plotting four random images with prediction labels')
 
-NumberImageToPlot = 20; 
-idx = randperm(numel(imdsValidation.Files),NumberImageToPlot); % Random permutation
-
-for i = 1:NumberImageToPlot
+idx = randperm(numel(imdsValidation.Files),4); % Random permutation
+for i = 1:4
     figure
     cd ../data/ 
     I = readimage(imdsValidation,idx(i));
-    imshow(I);
-    labelPrediction = YPred(idx(i));
-    Title = "Label = " + string(imdsValidation.Labels(idx(i))) + ...
-        ", Prediction = " + string(labelPrediction) + " (" + ...
-        num2str(100*max(probs(idx(i),:)),3) + "%)";
-    xlabel(Title);
+    h = imshow(I);
+    label = YPred(idx(i));
+    Title = "Label = " + string(imdsValidation.Labels(idx(i))) + ", Prediction = " + string(label) + " (" + num2str(100*max(probs(idx(i),:)),3) + "%)";
+    title(Title);
     cd ../results/
-    print(['ImagePrediction' num2str(i)],'-dpdf') % saving figure
+    saveas(h,['ImagePrediction' num2str(i)],'pdf'); % saving figure
 end
-close all;
-
 
 %% Analyzing network decision making
 
 % The gradient-weighted class activation mapping (Grad-CAM) technique was
 % employed to visually explore and understand the network%s decisions
 
-for i = 1:NumberImageToPlot
-    cd ../data/ 
-    I = readimage(imdsValidation,idx(i));
-    img = imresize(I,inputSize(1:2)); % Resizing image
+for i = 1:4
+    img = imread(imdsValidation.Files{idx(i)}); % Reading image
+    img = imresize(img,inputSize(1:2)); % Resizing image
 
-    classfn = classify(net,img); % Classifying image using last trained network
+    classfn = classify(net,img); % Classifying image
 
     % Grad-CAM reveals the Resnet decisions
     scoreMap = gradCAM(net,img,classfn);
     
     figure;
-    imshow(img);
+    h = imshow(img);
     hold on;
     imagesc(scoreMap,'AlphaData',0.5);
     colormap jet
     hold off;
     title("Grad-CAM");
-    labelPrediction = YPred(idx(i));
-    Title = "Label = " + string(imdsValidation.Labels(idx(i))) + ...
-        ", Prediction = " + string(labelPrediction) + " (" + ...
-        num2str(100*max(probs(idx(i),:)),3) + "%)";
-    xlabel(Title);
+    Title = "Label = " + string(imdsValidation.Labels(idx(i))) + ", Prediction = " + string(label) + " (" + num2str(100*max(probs(idx(i),:)),3) + "%)";
+    title(Title);
 
-    cd ../results/
-    print(['GradCAM' num2str(i)],'-dpdf')
+    saveas(h,['GradCAM' num2str(i)],'pdf');
 end
-close all;
 
 
 %% Showing and saving the performance metrics of the MCCV
@@ -241,7 +229,6 @@ PerformanceTable = table(Accuracy,Specificity,Sensitivity,Precision)
 
 % saving results
 save('results','TimeTable','PerformanceTable');
-
 
 %% Visualization of the performance using error bars
 
@@ -289,10 +276,31 @@ ylim([50 100])
 hold off
 
 cd ../results/
-% saving error bars
-print('errorbar','-dpdf'); 
+saveas(h,'errorbar','pdf');
 
-% 
-% 
-% 
+
+%% Analyzing network decision making
+
+% The gradient-weighted class activation mapping (Grad-CAM) technique was
+% employed to visually explore and understand the network%s decisions
+
+img = imread(imdsValidation.Files{13}); % Reading image
+img = imresize(img,inputSize(1:2)); % Resizing image
+
+classfn = classify(net,img); % Classifying image
+
+% Grad-CAM reveals the Resnet decisions
+scoreMap = gradCAM(net,img,classfn);
+figure;
+imshow(img);
+hold on;
+imagesc(scoreMap,'AlphaData',0.5);
+colormap jet
+hold off;
+title("Grad-CAM");
+
+% hacer esto varias veces
+
+
+
 % That's All Folks
