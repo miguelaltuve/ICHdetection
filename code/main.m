@@ -51,6 +51,7 @@ imageAugmenter = imageDataAugmenter( ...
 
 %  Monte Carlo cross-validation of 10 iterations
 for j = 1:iterationsMCCV
+    disp(['Iteration ' num2str(j) ' out of ' num2str(iterationsMCCV)])
     %  Divide the data into training and validation sets.
     % We used 80% of the images for training and 20% for validation.
     [imdsTrain,imdsValidation] = splitEachLabel(imds,TrainingDataPortion,'randomized');
@@ -137,6 +138,7 @@ for j = 1:iterationsMCCV
     tic;
     net = trainNetwork(augimdsTrain,lgraph,options);
     Time4Training(j) = toc;
+    delete(findall(0)); % Close training progress plot
 
     % Resizing the validation images without performing further data augmentation
     augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
@@ -165,10 +167,10 @@ for j = 1:iterationsMCCV
 end
 
 % time table
-TimeTable = table(Time4Training,Time4Test);
+TimeTable = table(Time4Training,Time4Test)
 
 % Performance table
-PerformanceTable = table(Accuracy,Specificity,Sensitivity,Precision);
+PerformanceTable = table(Accuracy,Specificity,Sensitivity,Precision)
 
 % Bar Chart with Error Bars
 
