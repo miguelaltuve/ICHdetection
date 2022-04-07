@@ -6,7 +6,15 @@
 % Email: miguelaltuve@gmail.com
 
 
-% Add code folder to the search path
+%% Clear Up
+close all;
+clear;
+clc;
+
+
+%% Adding code folder to the search path
+% You must run main.m in the code directory
+% cd C:\Users\miguel\ICHdetection\code
 addpath(pwd);
 
 cd ../data/ % data path
@@ -19,7 +27,7 @@ disp('Declaration and initialization of variables')
 imds = imageDatastore(pwd,'IncludeSubfolders',true,'LabelSource','foldernames');
 
 % Initialization of the performance metrics
-iterationsMCCV = 10; % Number of iterations of the MCCV
+iterationsMCCV = 5; % Number of iterations of the MCCV
 ConfMat = cell(iterationsMCCV,1); % confusion matrix of each iteration
 FinalConfMatr = zeros(2); % Final confusion matrix
 Accuracy = ones(iterationsMCCV,1); % Accuracy
@@ -245,11 +253,17 @@ disp('Performance metrics of the MCCV ')
 % Time table
 TimeTable = table(Time4Training,Time4Test)
 
+disp('Average time (s) during training and validation phases')
+disp(mean(table2array(TimeTable)))
+
 % Performance table
 PerformanceTable = table(Accuracy,Specificity,Sensitivity,Precision)
 
-% saving results
-save('results','TimeTable','PerformanceTable');
+disp('Average of Accuracy, Specificity, Sensitivity, and Precision')
+disp(mean(table2array(PerformanceTable)))
+
+% saving performance metrics and the last ResNet model
+save('results','TimeTable','PerformanceTable','net');
 
 
 %% Visualization of the performance using error bars
@@ -259,31 +273,20 @@ save('results','TimeTable','PerformanceTable');
 % of the MCCV.
 
 % Errors for accuracy
-pd = fitdist(Accuracy,'Normal'); % Fiting normal prob distribution to Accuracy
-ci = paramci(pd); % Confidence intervals for probability distrib parameters
-errhigh(1) = ci(2,1)- median(Accuracy);
-errlow (1) = median(Accuracy)-ci(1,1);
+[errhigh(1), errlow(1)] = findErrorsLimits4ErrorBars(Accuracy);
 
 % Errors for precision
-pd = fitdist(Precision,'Normal'); % Fiting normal prob distribution to Precision
-ci = paramci(pd);
-errhigh(2) = ci(2,1)- median(Precision);
-errlow (2) = median(Precision)-ci(1,1);
+[errhigh(2), errlow(2)] = findErrorsLimits4ErrorBars(Precision);
 
 % Errors for sensitivity
-pd = fitdist(Sensitivity,'Normal'); % Fiting normal prob distribution to Sensitivity
-ci = paramci(pd);
-errhigh(3) = ci(2,1)- median(Sensitivity);
-errlow (3) = median(Sensitivity)-ci(1,1);
+[errhigh(3), errlow(3)] = findErrorsLimits4ErrorBars(Sensitivity);
 
 % Errors for specificity
-pd = fitdist(Specificity,'Normal'); % Fiting normal prob distribution to Specificity
-ci = paramci(pd);
-errhigh(4) = ci(2,1)- median(Specificity);
-errlow (4) = median(Specificity)-ci(1,1);
+[errhigh(4), errlow(4)] = findErrorsLimits4ErrorBars(Specificity);
 
+% Ploting bar chart with error bars
 x = 1:4; % four bars
-figure, % Ploting bar chart with error bars
+figure, 
 h = bar(x,median(table2array(PerformanceTable)));
 xlabel(['Accuracy', 'Precision', 'Sensitivity','Specificity']);
 ylabel('Percentage');
