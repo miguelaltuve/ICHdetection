@@ -248,16 +248,20 @@ close all;
 
 
 %% Showing and saving the performance metrics of the MCCV
-disp('Performance metrics of the MCCV ')
+disp('Performance metrics of the MCCV');
 
 % Time table
-TimeTable = table(Time4Training,Time4Test)
+disp('Computation time during training and testing at each iteration of the MCCV')
+TimeTable = table(Time4Training,Time4Test);
+disp(TimeTable);
 
 disp('Average time (s) during training and validation phases')
 disp(mean(table2array(TimeTable)))
 
 % Performance table
-PerformanceTable = table(Accuracy,Specificity,Sensitivity,Precision)
+disp('Classification performance at each iteration of the MCCV')
+PerformanceTable = table(Accuracy,Specificity,Sensitivity,Precision);
+disp(PerformanceTable);
 
 disp('Average of Accuracy, Specificity, Sensitivity, and Precision')
 disp(mean(table2array(PerformanceTable)))
