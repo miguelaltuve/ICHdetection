@@ -267,7 +267,9 @@ disp('Average of Accuracy, Specificity, Sensitivity, and Precision')
 disp(mean(table2array(PerformanceTable)))
 
 % saving performance metrics and the last ResNet model
-save('results','TimeTable','PerformanceTable','net');
+save('results','TimeTable','PerformanceTable');
+cd ../code/app
+save('TrainedNetwork','net')
 
 
 %% Visualization of the performance using error bars
