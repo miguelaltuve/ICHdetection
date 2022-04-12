@@ -27,7 +27,7 @@ disp('Declaration and initialization of variables')
 imds = imageDatastore(pwd,'IncludeSubfolders',true,'LabelSource','foldernames');
 
 % Initialization of the performance metrics
-iterationsMCCV = 5; % Number of iterations of the MCCV
+iterationsMCCV = 1; % Number of iterations of the MCCV
 ConfMat = cell(iterationsMCCV,1); % confusion matrix of each iteration
 FinalConfMatr = zeros(2); % Final confusion matrix
 Accuracy = ones(iterationsMCCV,1); % Accuracy
@@ -235,7 +235,7 @@ for i = 1:NumberImageToPlot
     colormap jet
     hold off;
     title("Grad-CAM");
-    labelPrediction = YPred(idx(i));
+    labelPrediction = YPred(idx(i)); %%%%%% AQUI DEBERIA SER classfn
     Title = "Label = " + string(imdsValidation.Labels(idx(i))) + ...
         ", Prediction = " + string(labelPrediction) + " (" + ...
         num2str(100*max(probs(idx(i),:)),3) + "%)";
