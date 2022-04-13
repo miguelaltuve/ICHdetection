@@ -162,7 +162,7 @@ for j = 1:iterationsMCCV
 
     % Classification of new unseen images
     tic; % Computing the time for validation
-    [YPred,probs] = classify(net,augimdsValidation);
+    [YPred,scores] = classify(net,augimdsValidation);
     Time4Test(j) = toc;
 
     % Computing performance metris
@@ -202,10 +202,9 @@ for i = 1:NumberImageToPlot
     cd ../data/ 
     I = readimage(imdsValidation,idx(i));
     imshow(I);
-    labelPrediction = YPred(idx(i));
     Title = "Label = " + string(imdsValidation.Labels(idx(i))) + ...
-        ", Prediction = " + string(labelPrediction) + " (" + ...
-        num2str(100*max(probs(idx(i),:)),3) + "%)";
+        ", Prediction = " + string(YPred(idx(i))) + ...
+        " (" + num2str(100*max(scores(idx(i),:)),3) + "%)";
     xlabel(Title);
     cd ../results/
     print(['ImagePrediction' num2str(i)],'-dpdf') % saving figure
@@ -223,10 +222,11 @@ for i = 1:NumberImageToPlot
     I = readimage(imdsValidation,idx(i));
     img = imresize(I,inputSize(1:2)); % Resizing image
 
-    classfn = classify(net,img); % Classifying image using last trained network
+    % Classifying image using last trained network
+    [YPred,scores] = classify(net,img); 
 
     % Grad-CAM reveals the Resnet decisions
-    scoreMap = gradCAM(net,img,classfn);
+    scoreMap = gradCAM(net,img,YPred);
     
     figure;
     imshow(img);
@@ -235,10 +235,9 @@ for i = 1:NumberImageToPlot
     colormap jet
     hold off;
     title("Grad-CAM");
-    labelPrediction = YPred(idx(i)); %%%%%% AQUI DEBERIA SER classfn
     Title = "Label = " + string(imdsValidation.Labels(idx(i))) + ...
-        ", Prediction = " + string(labelPrediction) + " (" + ...
-        num2str(100*max(probs(idx(i),:)),3) + "%)";
+        ", Prediction = " + string(YPred) + ...
+        " (" + num2str(100*max(scores),3) + "%)";
     xlabel(Title);
 
     cd ../results/
