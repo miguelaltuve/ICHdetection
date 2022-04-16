@@ -28,7 +28,7 @@ disp('Declaration and initialization of variables')
 imds = imageDatastore(pwd,'IncludeSubfolders',true,'LabelSource','foldernames');
 
 % Initialization of the performance metrics
-iterationsMCCV = 1; % Number of iterations of the MCCV
+iterationsMCCV = 100; % Number of iterations of the MCCV
 ConfMat = cell(iterationsMCCV,1); % confusion matrix of each iteration
 FinalConfMatr = zeros(2); % Final confusion matrix
 Accuracy = ones(iterationsMCCV,1); % Accuracy
