@@ -268,7 +268,7 @@ disp(mean(table2array(PerformanceTable)))
 
 % saving performance metrics and the last ResNet model
 save('results','TimeTable','PerformanceTable');
-cd ../code/app
+cd ../app
 save('TrainedNetwork','net')
 
 
