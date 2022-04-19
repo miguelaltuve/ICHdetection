@@ -293,11 +293,11 @@ save('TrainedNetwork','net')
 % Ploting bar chart with error bars
 x = 1:4; % four bars
 figure, 
-h = bar(x,median(table2array(PerformanceTable)));
+h = bar(x,mean(table2array(PerformanceTable)));
 xlabel(['Accuracy', 'Precision', 'Sensitivity','Specificity']);
 ylabel('Percentage');
 hold on
-er = errorbar(x,median(table2array(PerformanceTable)),errlow,errhigh);
+er = errorbar(x,mean(table2array(PerformanceTable)),errlow,errhigh);
 er.Color = [0 0 0];
 er.LineStyle = 'none';
 grid on;
@@ -314,3 +314,5 @@ print('errorbar','-dpdf');
 % 
 % 
 % That's All Folks
+
+exit;
