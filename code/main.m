@@ -293,7 +293,7 @@ save('TrainedNetwork','net')
 % Ploting bar chart with error bars
 x = 1:4; % four bars
 figure, 
-h = bar(x,mean(table2array(PerformanceTable)));
+bar(x,mean(table2array(PerformanceTable)));
 xlabel(['Accuracy', 'Precision', 'Sensitivity','Specificity']);
 ylabel('Percentage');
 hold on
