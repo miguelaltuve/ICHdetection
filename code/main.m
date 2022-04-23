@@ -35,7 +35,7 @@ Accuracy = ones(iterationsMCCV,1); % Accuracy
 Precision = ones(iterationsMCCV,1); % Precision
 Specificity = ones(iterationsMCCV,1); % Specificity
 Sensitivity = ones(iterationsMCCV,1); % Sensitivity
-F1= ones(iterationsMCCV,1); % F-score
+F1= ones(iterationsMCCV,1); % F1 score
 
 % Setting the hyperparameters of the model
 miniBatchSizeValue = 16; % mini batch size
@@ -182,8 +182,8 @@ for j = 1:iterationsMCCV
     % negatives from the confusion matrix
     TP = ConfMat{j}(1,1); % True positives
     TN = ConfMat{j}(2,2); % True negatives
-    FN = ConfMat{j}(1,2);
-    FP = ConfMat{j}(2,1);
+    FN = ConfMat{j}(1,2); % False negatives
+    FP = ConfMat{j}(2,1); % False positives
 
     % Computing performance metrics from confusion matrix information
     Precision(j) = TP/(TP+FP)*100;
@@ -191,8 +191,10 @@ for j = 1:iterationsMCCV
     Specificity(j) = TN/(TN+FP)*100;
     F1(j) = 2*TP/(2*TP+FP+FN)*100;
 
-end % End of MCCV
+% End of MCCV
+end 
 
+% Displaying confusion matrices on the Command Window
 disp('Last confusion matrix on a validation subset')
 disp(ConfMat{j})
 
@@ -258,7 +260,7 @@ end
 close all;
 
 
-%% Showing and saving the performance metrics of the MCCV
+%% Displaying and saving the performance metrics of the MCCV
 disp('Performance metrics of the MCCV');
 
 % Time table
@@ -278,34 +280,35 @@ disp('Average of Accuracy, Specificity, Sensitivity, Precision, and F1 score')
 disp(mean(table2array(PerformanceTable)))
 
 % saving performance metrics and the last ResNet model
-save('results04222022','TimeTable','PerformanceTable','ConfMat','FinalConfMatr','iterationsMCCV');
+save('results','TimeTable','PerformanceTable','ConfMat','FinalConfMatr','iterationsMCCV');
 cd ../app
-save('TrainedNetwork','net')
+% Saving the last trained network. It is used by the app
+save('TrainedNetwork','net') 
 
 
 %% Visualization of the performance using error bars
 
-% Error bars represent the median +- 95% confidence interval of the
+% Error bars represent the mean +- 95% confidence interval of the
 % measures obtained on the validation set over the different iterations
 % of the MCCV.
 
 % Errors for accuracy
-[errhigh(1), errlow(1)] = findErrorsLimits4ErrorBars(Accuracy);
+[errhigh(1), errlow(1), ci(:,1)] = findErrorsLimits4ErrorBars(PerformanceTable.Accuracy);
 
 % Errors for specificity
-[errhigh(2), errlow(2)] = findErrorsLimits4ErrorBars(Specificity);
+[errhigh(2), errlow(2), ci(:,2)] = findErrorsLimits4ErrorBars(PerformanceTable.Specificity);
 
 % Errors for sensitivity
-[errhigh(3), errlow(3)] = findErrorsLimits4ErrorBars(Sensitivity);
+[errhigh(3), errlow(3), ci(:,3)] = findErrorsLimits4ErrorBars(PerformanceTable.Sensitivity);
 
 % Errors for precision
-[errhigh(4), errlow(4)] = findErrorsLimits4ErrorBars(Precision);
+[errhigh(4), errlow(4), ci(:,4)] = findErrorsLimits4ErrorBars(PerformanceTable.Precision);
 
-% Errors for precision
-[errhigh(5), errlow(5)] = findErrorsLimits4ErrorBars(F1);
+% Errors for F1 score
+[errhigh(5), errlow(5), ci(:,5)] = findErrorsLimits4ErrorBars(PerformanceTable.F1);
 
-% Ploting bar chart with error bars
-x = 1:5; % four bars
+% Ploting bar charts with error bars
+x = 1:5; % five bars
 figure, 
 bar(x,mean(table2array(PerformanceTable)));
 xlabel(['Accuracy', 'Specificity', 'Sensitivity', 'Precision', 'F1']);
@@ -315,16 +318,17 @@ er = errorbar(x,mean(table2array(PerformanceTable)),errlow,errhigh);
 er.Color = [0 0 0];
 er.LineStyle = 'none';
 grid on;
-ylim([50 101])
+ylim([70 100])
 hold off
 
 cd ../results/
 % saving error bars
 print('errorbar','-dpdf'); 
 
+disp('Lower and upper boundaries of the 95% confidence interval of the performance metrics');
+disp(ci);
+
 % 
 % 
 % 
 % That's All Folks
-
-exit;
