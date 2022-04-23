@@ -34,6 +34,11 @@ Grad-Cam, a generalization of the class activation mapping technique, is a visua
 
 Examples of ICH CT images with visual explanations of the network using Grad-CAM technique.
 
+## Classification performance over 100 iterations
+
+![errorbar](https://user-images.githubusercontent.com/8375111/164942617-4246dbcf-8953-42d6-96f4-702a7f301acb.png)
+
+
 ## MATLAB APP
 We have developed an app in MATLAB that can be used to detect ICH on CT images using the trained ResNet-18 network, and where the Grad-Cam is plotted to visualize the network's decisions. The app (ICHdetection.mlappinstall) can be installed and accessed from the apps gallery in MATLAB. 
 
