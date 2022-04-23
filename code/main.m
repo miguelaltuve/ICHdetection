@@ -35,6 +35,7 @@ Accuracy = ones(iterationsMCCV,1); % Accuracy
 Precision = ones(iterationsMCCV,1); % Precision
 Specificity = ones(iterationsMCCV,1); % Specificity
 Sensitivity = ones(iterationsMCCV,1); % Sensitivity
+F1= ones(iterationsMCCV,1); % F-score
 
 % Setting the hyperparameters of the model
 miniBatchSizeValue = 16; % mini batch size
@@ -169,6 +170,7 @@ for j = 1:iterationsMCCV
     % Computing performance metris
     Accuracy(j) = mean(YPred == imdsValidation.Labels)*100;
 
+    % Constructing confusion matrix
     %     figure;
     %     cm = confusionchart(imdsValidation.Labels,YPred,...
     %         'RowSummary','row-normalized', ...
@@ -176,9 +178,18 @@ for j = 1:iterationsMCCV
     ConfMat{j} = confusionmat(imdsValidation.Labels,YPred);
     FinalConfMatr = FinalConfMatr + ConfMat{j,1};
 
-    Precision(j) = ConfMat{j}(1,1)/sum(ConfMat{j}(:,1))*100;
-    Sensitivity(j) = ConfMat{j}(1,1)/sum(ConfMat{j}(1,:))*100;
-    Specificity(j) = ConfMat{j}(2,2)/sum(ConfMat{j}(2,:))*100;
+    % Extracting true positives, true negatives, false positives, and false
+    % negatives from the confusion matrix
+    TP = ConfMat{j}(1,1); % True positives
+    TN = ConfMat{j}(2,2); % True negatives
+    FN = ConfMat{j}(1,2);
+    FP = ConfMat{j}(2,1);
+
+    % Computing performance metrics from confusion matrix information
+    Precision(j) = TP/(TP+FP)*100;
+    Sensitivity(j) = TP/(TP+FN)*100;
+    Specificity(j) = TN/(TN+FP)*100;
+    F1(j) = 2*TP/(2*TP+FP+FN)*100;
 
 end % End of MCCV
 
@@ -260,14 +271,14 @@ disp(mean(table2array(TimeTable)))
 
 % Performance table
 disp('Classification performance at each iteration of the MCCV')
-PerformanceTable = table(Accuracy,Specificity,Sensitivity,Precision);
+PerformanceTable = table(Accuracy,Specificity,Sensitivity,Precision,F1);
 disp(PerformanceTable);
 
-disp('Average of Accuracy, Specificity, Sensitivity, and Precision')
+disp('Average of Accuracy, Specificity, Sensitivity, Precision, and F1 score')
 disp(mean(table2array(PerformanceTable)))
 
 % saving performance metrics and the last ResNet model
-save('results','TimeTable','PerformanceTable');
+save('results04222022','TimeTable','PerformanceTable','ConfMat','FinalConfMatr','iterationsMCCV');
 cd ../app
 save('TrainedNetwork','net')
 
@@ -281,29 +292,30 @@ save('TrainedNetwork','net')
 % Errors for accuracy
 [errhigh(1), errlow(1)] = findErrorsLimits4ErrorBars(Accuracy);
 
-% Errors for precision
-[errhigh(2), errlow(2)] = findErrorsLimits4ErrorBars(Precision);
+% Errors for specificity
+[errhigh(2), errlow(2)] = findErrorsLimits4ErrorBars(Specificity);
 
 % Errors for sensitivity
 [errhigh(3), errlow(3)] = findErrorsLimits4ErrorBars(Sensitivity);
 
-% Errors for specificity
-[errhigh(4), errlow(4)] = findErrorsLimits4ErrorBars(Specificity);
+% Errors for precision
+[errhigh(4), errlow(4)] = findErrorsLimits4ErrorBars(Precision);
+
+% Errors for precision
+[errhigh(5), errlow(5)] = findErrorsLimits4ErrorBars(F1);
 
 % Ploting bar chart with error bars
-x = 1:4; % four bars
+x = 1:5; % four bars
 figure, 
 bar(x,mean(table2array(PerformanceTable)));
-xlabel(['Accuracy', 'Precision', 'Sensitivity','Specificity']);
+xlabel(['Accuracy', 'Specificity', 'Sensitivity', 'Precision', 'F1']);
 ylabel('Percentage');
 hold on
 er = errorbar(x,mean(table2array(PerformanceTable)),errlow,errhigh);
 er.Color = [0 0 0];
 er.LineStyle = 'none';
 grid on;
-xlabel('Metrics');
-ylabel('Percentage');
-ylim([50 102])
+ylim([50 101])
 hold off
 
 cd ../results/
