@@ -36,6 +36,14 @@ Examples of ICH CT images with visual explanations of the network using Grad-CAM
 
 ## Classification performance over 100 iterations
 
+| True class      | Predicted class         | |
+| ----------- | ----------- |   -----------  |
+|       | ICH       | Normal |
+| Normal   | 1913        | 87 |
+| Normal   | 76        |1924 |
+
+
+
 ![errorbar](https://user-images.githubusercontent.com/8375111/164942617-4246dbcf-8953-42d6-96f4-702a7f301acb.png)
 
 
