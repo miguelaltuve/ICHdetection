@@ -1,6 +1,6 @@
 # ICHdetection
 
-Code of the paper Altuve, M., & Perez, A. (2022). Intracerebral Hemorrhage Detection on Computed Tomography Images Using a Residual Neural Network
+Code of the paper Altuve, M., & Perez, A. (2022). Intracerebral Hemorrhage Detection on Computed Tomography Images Using a Residual Neural Network. Physica Medica, 99, 113-119.
 
 **Citation of the code**: Altuve, M. (2022) Intracerebral Hemorrhage Detection on Computed Tomography Images Using a Residual Neural Network [Source Code].
 
